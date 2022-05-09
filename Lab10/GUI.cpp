@@ -2,15 +2,6 @@
 
 void GUI::initializeGUIComponents() {
 
-	//impartim fereastra in 2: in stanga, butoane+labels+qlineedits
-	//iar in dreapta: tabelul cu melodii
-
-	//"stanga" si "dreapta" pentru ca este QHBoxLayout
-	//se adauga componente incepand din stanga, pe orizontala
-	//aici: "left" component, then "right" component
-	//care la randul lor contin alte componente
-
-	//main layout
 	QHBoxLayout* lyMain = new QHBoxLayout;
 	this->setLayout(lyMain);
 
@@ -21,8 +12,7 @@ void GUI::initializeGUIComponents() {
 	QVBoxLayout* lyLeft = new QVBoxLayout;
 	left->setLayout(lyLeft);
 
-	//componente pentru functionalitatea de adaugare a unei melodii
-	//folosim un QFormLayout pentru detaliile de adaugare a unei melodii
+	//componente pentru functionalitatea de adaugare a unui medicament
 	QWidget* form = new QWidget;
 	QFormLayout* lyForm = new QFormLayout;
 	form->setLayout(lyForm);
@@ -38,7 +28,7 @@ void GUI::initializeGUIComponents() {
 	addMed = new QPushButton("Adauga medicament");
 	lyForm->addWidget(addMed);
 
-	//adaugam toate componentele legate de adaugare melodie
+	//adaugam toate componentele legate de adaugare medicamentului
 	//in layout-ul care corespunde partii din stanga a ferestrei
 	lyLeft->addWidget(form);
 
@@ -46,15 +36,6 @@ void GUI::initializeGUIComponents() {
 	QWidget* formMod = new QWidget;
 	QFormLayout* lyFormMod = new QFormLayout;
 	formMod->setLayout(lyFormMod);
-	edit_mod_den = new QLineEdit;
-	edit_mod_prod = new QLineEdit;
-	edit_mod_subs = new QLineEdit;
-	edit_mod_pret = new QLineEdit;
-
-	lyFormMod->addRow(mod_denumire, edit_mod_den);
-	lyFormMod->addRow(mod_prod, edit_mod_prod);
-	lyFormMod->addRow(mod_subs, edit_mod_subs);
-	lyFormMod->addRow(mod_pret, edit_mod_pret);
 	modMed = new QPushButton("Modifica medicament");
 	lyFormMod->addWidget(modMed);
 
@@ -65,23 +46,13 @@ void GUI::initializeGUIComponents() {
 	QWidget* formDel = new QWidget;
 	QFormLayout* lyFormDel = new QFormLayout;
 	formDel->setLayout(lyFormDel);
-	edit_del_den = new QLineEdit;
-	edit_del_prod = new QLineEdit;
-
-	lyFormDel->addRow(del_denumire, edit_del_den);
-	lyFormDel->addRow(del_prod, edit_del_prod);
+	
 	delMed = new QPushButton("Sterge medicament");
 	lyFormDel->addWidget(delMed);
 
 	lyLeft->addWidget(formDel);
 
-	//Radio Buttons: ne ajuta cand trebuie sa selectam doar o 
-	//optiune din mai multe (doar un RadioButton poate fi selectat
-	//la un moment dat)
-
-	//cream un GroupBox pentru radiobuttons care corespund 
-	//criteriilor de sortare pe care le avem (dupa artist+titlu 
-	//si durata) + butonul de sortare
+	
 
 	QVBoxLayout* lyRadioBox = new QVBoxLayout;
 	this->sortBox->setLayout(lyRadioBox);
@@ -98,21 +69,25 @@ void GUI::initializeGUIComponents() {
 
 	QVBoxLayout* lyRadioBox2 = new QVBoxLayout;
 	this->filterBox->setLayout(lyRadioBox2);
-	lyRadioBox2->addWidget(filter_pret);
-	lyRadioBox2->addWidget(filter_subs); 
-	edit_filt_pret = new QLineEdit;
-	edit_filt_pret = new QLineEdit;
 
-	//lyRadioBox2->addRow(filtru_pret, edit_filt_pret);
-	//lyRadioBox2->addRow(filtru_subs, edit_filt_subs);
+	lyRadioBox2->addWidget(filter_pret);
+	lyRadioBox2->addWidget(filter_subs);
 
 	filter = new QPushButton("FIltreaza medicamente");
 	lyRadioBox2->addWidget(filter);
 
 	lyLeft->addWidget(filterBox);
 
+	QWidget* formReteta = new QWidget;
+	QFormLayout* lyFormReteta = new QFormLayout;
+	formReteta->setLayout(lyFormReteta);
+	reteta = new QPushButton("Reteta");
+	lyFormReteta->addWidget(reteta);
+
+	//lyLeft->addWidget(formReteta);
+
 	// Buton folosit pentru a reincarca datele
-		//i.e. afisam toate melodiile in tabel, in ordinea initiala din fisier
+		//i.e. afisam toate medicamentele in tabel, in ordinea initiala din fisier
 		reload_data = new QPushButton("Reload data");
 	lyLeft->addWidget(reload_data);
 
@@ -120,7 +95,7 @@ void GUI::initializeGUIComponents() {
 	lyLeft->addWidget(undo);
 
 
-	//componenta right - contine doar tabelul cu melodii
+	
 	QWidget* right = new QWidget;
 	QVBoxLayout* lyRight = new QVBoxLayout;
 	right->setLayout(lyRight);
@@ -179,7 +154,7 @@ void GUI::connectSignalsSlots() {
 		//string filtru_subs = this->editFilterCriteria->text().toStdString();
 		if (this->filter_pret->isChecked()) {
 			try {
-				this->reloadMedicamente(serv.filter_pret(50));
+				guifilter_pret();
 			}
 			catch (RepoException& re) {
 				QMessageBox::information(this, "Info", QString::fromStdString(re.get_errorMsg()));
@@ -188,7 +163,7 @@ void GUI::connectSignalsSlots() {
 		else if (this->filter_subs->isChecked()) {
 			
 			try {
-				this->reloadMedicamente(serv.filter_sub("ceva"));
+				guifilter_subs();
 			}
 			catch (RepoException& re) {
 				QMessageBox::information(this, "Info", QString::fromStdString(re.get_errorMsg()));
@@ -196,6 +171,8 @@ void GUI::connectSignalsSlots() {
 		}
 		});
 
+	QObject::connect(reteta, &QPushButton::clicked, this, &GUI::guiReteta);
+		
 	QObject::connect(reload_data, &QPushButton::clicked, [&]() {
 		this->reloadMedicamente(serv.get_all());
 		});
@@ -230,7 +207,7 @@ void GUI::guiAddMedicament() {
 		this->serv.adauga(denumire, producator, subs, pret);
 		this->reloadMedicamente(this->serv.get_all());
 
-		//afisam un mesaj pentru a anunta utilizatorul ca melodia s-a adaugat
+		
 		QMessageBox::information(this, "Info", QString::fromStdString("Medicament adaugat cu succes."));
 
 	}
@@ -245,59 +222,225 @@ void GUI::guiAddMedicament() {
 }
 
 void GUI::guiModMedicament() {
-	try {
-		//preluare detalii din QLineEdit-uri
-		string mod_denumire = edit_mod_den->text().toStdString();
-		string mod_prod = edit_mod_prod->text().toStdString();
-		string mod_subs = edit_mod_subs->text().toStdString();
-		double mod_pret = edit_mod_pret->text().toDouble();
+	QWidget* modificaWindow = new QWidget;
 
-		//optional - golim QLineEdit-urile dupa apasarea butonului
-		edit_mod_den->clear();
-		edit_mod_prod->clear();
-		edit_mod_subs->clear();
-		edit_mod_pret->clear();
+	QWidget* formWidget = new QWidget;
+	QFormLayout* formLayout = new QFormLayout;
 
-		this->serv.modifica(mod_denumire, mod_prod, mod_subs, mod_pret);
-		this->reloadMedicamente(this->serv.get_all());
+	QLabel* denLabel = new QLabel("Denumire: ");
+	QLineEdit* denLine = new QLineEdit;
+	formLayout->addRow(denLabel, denLine);
 
-		//afisam un mesaj pentru a anunta utilizatorul ca melodia s-a adaugat
-		QMessageBox::information(this, "Info", QString::fromStdString("Medicament modificat cu succes."));
+	QLabel* producatorLabel = new QLabel("Producator: ");
+	QLineEdit* producatorLine = new QLineEdit;
+	formLayout->addRow(producatorLabel, producatorLine);
 
-	}
-	catch (RepoException& re) {
-		QMessageBox::warning(this, "Warning", QString::fromStdString(re.get_errorMsg()));
-	}
-	catch (ValidationException& ve) {
-		QMessageBox::warning(this, "Warning", QString::fromStdString(ve.get_error()));
-	}
+	QLabel* subsLabel = new QLabel("Substanta activa: ");
+	QLineEdit* subsLine = new QLineEdit;
+	formLayout->addRow(subsLabel, subsLine);
+
+	QLabel* pretLabel = new QLabel("Pret: ");
+	QLineEdit* pretLine = new QLineEdit;
+	formLayout->addRow(pretLabel, pretLine);
+
+	formWidget->setLayout(formLayout);
+
+	QVBoxLayout* vLayout = new QVBoxLayout;
+	vLayout->addWidget(formWidget);
+
+	QPushButton* modifica = new QPushButton("&Modifica");
+	QObject::connect(modifica, &QPushButton::clicked, [=]() {
+		try {
+			this->serv.modifica(denLine->text().toStdString(), producatorLine->text().toStdString(), subsLine->text().toStdString(), pretLine->text().toDouble());
+			this->reloadMedicamente(this->serv.get_all());
+			modificaWindow->close();
+		}
+		catch (const ValidationException& ve) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare validare");
+			msgBox.setText(QString::fromUtf8(ve.get_error()));
+			msgBox.exec();
+			modificaWindow->close();
+		}
+		catch (const RepoException& re) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare repo");
+			msgBox.setText(QString::fromUtf8(re.get_errorMsg()));
+			msgBox.exec();
+			modificaWindow->close();
+		}
+		});
+	vLayout->addWidget(modifica);
+
+	modificaWindow->setLayout(vLayout);
+	modificaWindow->show();
 
 
 }
 
 void GUI::guiDelMedicament() {
-	try {
-		//preluare detalii din QLineEdit-uri
-		string del_denumire = edit_del_den->text().toStdString();
-		string del_prod = edit_del_prod->text().toStdString();
+	QWidget* modificaWindow = new QWidget;
 
-		//optional - golim QLineEdit-urile dupa apasarea butonului
-		edit_del_den->clear();
-		edit_del_prod->clear();
+	QWidget* formWidget = new QWidget;
+	QFormLayout* formLayout = new QFormLayout;
 
-		this->serv.sterge(del_denumire, del_prod);
-		this->reloadMedicamente(this->serv.get_all());
+	QLabel* denLabel = new QLabel("Denumire: ");
+	QLineEdit* denLine = new QLineEdit;
+	formLayout->addRow(denLabel, denLine);
 
-		//afisam un mesaj pentru a anunta utilizatorul ca melodia s-a adaugat
-		QMessageBox::information(this, "Info", QString::fromStdString("Medicament sters cu succes."));
+	QLabel* producatorLabel = new QLabel("Producator: ");
+	QLineEdit* producatorLine = new QLineEdit;
+	formLayout->addRow(producatorLabel, producatorLine);
 
-	}
-	catch (RepoException& re) {
-		QMessageBox::warning(this, "Warning", QString::fromStdString(re.get_errorMsg()));
-	}
-	catch (ValidationException& ve) {
-		QMessageBox::warning(this, "Warning", QString::fromStdString(ve.get_error()));
-	}
+	formWidget->setLayout(formLayout);
+
+	QVBoxLayout* vLayout = new QVBoxLayout;
+	vLayout->addWidget(formWidget);
+
+	QPushButton* sterge = new QPushButton("&Modifica");
+	QObject::connect(sterge, &QPushButton::clicked, [=]() {
+		try {
+			this->serv.sterge(denLine->text().toStdString(), producatorLine->text().toStdString());
+			this->reloadMedicamente(this->serv.get_all());
+			modificaWindow->close();
+		}
+		catch (const ValidationException& ve) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare validare");
+			msgBox.setText(QString::fromUtf8(ve.get_error()));
+			msgBox.exec();
+			modificaWindow->close();
+		}
+		catch (const RepoException& re) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare repo");
+			msgBox.setText(QString::fromUtf8(re.get_errorMsg()));
+			msgBox.exec();
+			modificaWindow->close();
+		}
+		});
+	vLayout->addWidget(sterge);
+
+	modificaWindow->setLayout(vLayout);
+	modificaWindow->show();
 
 
+}
+
+void GUI::guifilter_pret() {
+	QWidget* pretWindow = new QWidget;
+
+	QWidget* formWidget = new QWidget;
+	QFormLayout* formLayout = new QFormLayout;
+
+	QLabel* pretLabel = new QLabel("Pret: ");
+	QLineEdit* pretLine = new QLineEdit;
+	formLayout->addRow(pretLabel, pretLine);
+
+	formWidget->setLayout(formLayout);
+
+	QVBoxLayout* vLayout = new QVBoxLayout;
+	vLayout->addWidget(formWidget);
+
+	QPushButton* filt_pret = new QPushButton("&Filtreaza");
+	QObject::connect(filt_pret, &QPushButton::clicked, [=]() {
+		try {
+			this->serv.filter_pret(pretLine->text().toDouble());
+			this->reloadMedicamente(this->serv.filter_pret(pretLine->text().toDouble()));
+			pretWindow->close();
+		}
+		catch (const ValidationException& ve) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare validare");
+			msgBox.setText(QString::fromUtf8(ve.get_error()));
+			msgBox.exec();
+			pretWindow->close();
+		}
+		catch (const RepoException& re) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare repo");
+			msgBox.setText(QString::fromUtf8(re.get_errorMsg()));
+			msgBox.exec();
+			pretWindow->close();
+		}
+		});
+	vLayout->addWidget(filt_pret);
+
+	pretWindow->setLayout(vLayout);
+	pretWindow->show();
+
+
+}
+
+void GUI::guifilter_subs() {
+	QWidget* pretWindow = new QWidget;
+
+	QWidget* formWidget = new QWidget;
+	QFormLayout* formLayout = new QFormLayout;
+
+	QLabel* pretLabel = new QLabel("Substanta activa: ");
+	QLineEdit* pretLine = new QLineEdit;
+	formLayout->addRow(pretLabel, pretLine);
+
+	formWidget->setLayout(formLayout);
+
+	QVBoxLayout* vLayout = new QVBoxLayout;
+	vLayout->addWidget(formWidget);
+
+	QPushButton* filt_pret = new QPushButton("&Filtreaza");
+	QObject::connect(filt_pret, &QPushButton::clicked, [=]() {
+		try {
+			this->serv.filter_sub(pretLine->text().toStdString());
+			this->reloadMedicamente(this->serv.filter_sub(pretLine->text().toStdString()));
+			pretWindow->close();
+		}
+		catch (const ValidationException& ve) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare validare");
+			msgBox.setText(QString::fromUtf8(ve.get_error()));
+			msgBox.exec();
+			pretWindow->close();
+		}
+		catch (const RepoException& re) {
+			QMessageBox msgBox;
+			msgBox.setWindowTitle("Eroare repo");
+			msgBox.setText(QString::fromUtf8(re.get_errorMsg()));
+			msgBox.exec();
+			pretWindow->close();
+		}
+		});
+	vLayout->addWidget(filt_pret);
+
+	pretWindow->setLayout(vLayout);
+	pretWindow->show();
+
+
+}
+
+void GUI::guiReteta() {
+	QWidget* RetetaMain = new QWidget;
+
+	QWidget* left = new QWidget;
+	QVBoxLayout* lyLeft = new QVBoxLayout;
+	left->setLayout(lyLeft);
+
+	QWidget* addForm = new QWidget;
+	QFormLayout* lyAdd = new QFormLayout;
+	addForm->setLayout(lyAdd);
+
+	QLabel* den = new QLabel ("Denumire ");
+	QLabel* prod = new QLabel("Producator ");
+
+	QLineEdit* edit_den = new QLineEdit;
+	QLineEdit* edit_prod = new QLineEdit;
+
+	lyAdd->addRow(den, edit_den);
+	lyAdd->addRow(prod, edit_prod);
+
+	QPushButton* add = new QPushButton("Adauga la reteta");
+	lyAdd->addWidget(add);
+
+	lyLeft->addWidget(addForm);
+
+	//RetetaMain->addWidget(left);
 }

@@ -62,12 +62,9 @@ private:
 	QRadioButton* filter_pret = new QRadioButton(QString::fromStdString("Pret"));	
 	QRadioButton* filter_subs = new QRadioButton(QString::fromStdString("Substanta activa"));
 
-	QLabel* filtru_pret = new QLabel{ "Criteriu pret" };
-	QLabel* filtru_subs = new QLabel{ "Criteriu substanta" };
-	QLineEdit* edit_filt_pret;
-	QLineEdit* edit_filt_subs;
-
 	QPushButton* filter;
+
+	QPushButton* reteta;
 
 	QPushButton* reload_data;
 
@@ -91,4 +88,7 @@ public:
 	void guiAddMedicament();
 	void guiModMedicament();
 	void guiDelMedicament();
+	void guifilter_pret();
+	void guifilter_subs();
+	void guiReteta();
 };

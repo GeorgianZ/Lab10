@@ -1,2 +1,3 @@
-dasd | gfd | fds | 54
-ceva | ilie | nebuneala | 100
+dasd | ceva | da | 100
+ceva | da | da | 200
+paracetamol | cineva | dap | 150
