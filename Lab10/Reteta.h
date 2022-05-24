@@ -1,9 +1,10 @@
 #pragma once
 #include "Medicament.h"
+#include "Observer.h"
 #include <vector>
 using std::vector;
 
-class Reteta {
+class Reteta: public Observable {
 private:
 	std::vector<Medicament> reteta;
 public:

@@ -146,6 +146,10 @@ public:
 	*/
 	void undo();
 
+	Reteta& getList() {
+		return this->reteta;
+	}
+
 };
 
 void test_add_service();

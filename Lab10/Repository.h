@@ -1,6 +1,7 @@
 #pragma once
 #include "Medicament.h"
 #include "VectDin.h"
+#include "Observer.h"
 #include <vector>
 using std::vector;
 

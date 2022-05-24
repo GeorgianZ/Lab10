@@ -44,6 +44,7 @@ void GUI::initializeGUIComponents() {
 
 
 	QWidget* formDel = new QWidget;
+
 	QFormLayout* lyFormDel = new QFormLayout;
 	formDel->setLayout(lyFormDel);
 	
@@ -84,7 +85,7 @@ void GUI::initializeGUIComponents() {
 	reteta = new QPushButton("Reteta");
 	lyFormReteta->addWidget(reteta);
 
-	//lyLeft->addWidget(formReteta);
+	lyLeft->addWidget(formReteta);
 
 	// Buton folosit pentru a reincarca datele
 		//i.e. afisam toate medicamentele in tabel, in ordinea initiala din fisier
@@ -114,6 +115,25 @@ void GUI::initializeGUIComponents() {
 
 
 	lyRight->addWidget(medicamente);
+
+	QFormLayout* cosLayout = new QFormLayout;
+	QWidget* cosWidget = new QWidget;
+	cosWidget->setLayout(cosLayout);
+
+	adaugaCosLine = new QLineEdit;
+	adaugaCosButton = new QPushButton("Adauga in cos");
+	cosLayout->addRow(adaugaCosLine, adaugaCosButton);
+
+	stergeCosLine = new QLineEdit;
+	stergeCosButton = new QPushButton("Sterge din cos");
+	cosLayout->addRow(stergeCosLine, stergeCosButton);
+
+	genereazaCosLine = new QLineEdit;
+	genereazaCosButton = new QPushButton("Generaza cos");
+	cosLayout->addRow(genereazaCosLine, genereazaCosButton);
+
+	lyRight->addWidget(cosWidget);
+
 
 	lyMain->addWidget(left);
 	lyMain->addWidget(right);
@@ -418,29 +438,5 @@ void GUI::guifilter_subs() {
 }
 
 void GUI::guiReteta() {
-	QWidget* RetetaMain = new QWidget;
-
-	QWidget* left = new QWidget;
-	QVBoxLayout* lyLeft = new QVBoxLayout;
-	left->setLayout(lyLeft);
-
-	QWidget* addForm = new QWidget;
-	QFormLayout* lyAdd = new QFormLayout;
-	addForm->setLayout(lyAdd);
-
-	QLabel* den = new QLabel ("Denumire ");
-	QLabel* prod = new QLabel("Producator ");
-
-	QLineEdit* edit_den = new QLineEdit;
-	QLineEdit* edit_prod = new QLineEdit;
-
-	lyAdd->addRow(den, edit_den);
-	lyAdd->addRow(prod, edit_prod);
-
-	QPushButton* add = new QPushButton("Adauga la reteta");
-	lyAdd->addWidget(add);
-
-	lyLeft->addWidget(addForm);
-
-	//RetetaMain->addWidget(left);
+	RetetaWindow->show();
 }

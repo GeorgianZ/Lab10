@@ -12,6 +12,7 @@
 #include <QHeaderView>
 #include <QGroupBox>
 #include <QRadioButton>
+#include "RetetaGUI.h"
 
 
 class GUI: public QWidget {
@@ -65,12 +66,20 @@ private:
 	QPushButton* filter;
 
 	QPushButton* reteta;
+	RetetaGUI* RetetaWindow;
 
 	QPushButton* reload_data;
 
 	QPushButton* undo;
 
 	QTableWidget* medicamente;
+
+	QLineEdit* adaugaCosLine;
+	QPushButton* adaugaCosButton;
+	QLineEdit* stergeCosLine;
+	QPushButton* stergeCosButton;
+	QLineEdit* genereazaCosLine;
+	QPushButton* genereazaCosButton;
 
 	void initializeGUIComponents();
 
@@ -82,6 +91,7 @@ public:
 		initializeGUIComponents();
 		connectSignalsSlots();
 		reloadMedicamente(serv.get_all());
+		RetetaWindow = new RetetaGUI(serv);
 	};
 	GUI(const GUI& ot) = delete;
 

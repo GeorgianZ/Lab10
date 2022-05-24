@@ -85,10 +85,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CosReadOnlyGUI.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Medicament.cpp" />
     <ClCompile Include="Repository.cpp" />
     <ClCompile Include="Reteta.cpp" />
+    <ClCompile Include="RetetaGUI.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Validation.cpp" />
@@ -100,11 +102,14 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CosReadOnlyGUI.h" />
     <ClInclude Include="FileRepository.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Medicament.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="Repository.h" />
     <ClInclude Include="Reteta.h" />
+    <ClInclude Include="RetetaGUI.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Undo.h" />
@@ -113,6 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="fileRepo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="file1.cvs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
